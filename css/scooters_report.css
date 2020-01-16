@@ -1,0 +1,63 @@
+#scooters-report-div-map {
+    position: absolute;
+    top: 12%;
+    left: 101px;
+    width: 85%;
+    height: 70%;
+    background-color: white;
+}
+
+#scooters-report-div-today {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    width: 160px;
+    height: 5%;
+    margin: -10px 0 0 -240px;
+    background-color: #79C5F2;
+}
+
+#scooters-report-button-today {
+    position: absolute;
+    top: 15px;
+    left: 5px;
+    width: 150px; 
+    height: 40px;
+}
+
+#scooters-report-div-1week {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    width: 160px;
+    height: 5%;
+    margin: -10px 0 0 -80px;
+    background-color: #79C5F2;
+}
+
+#scooters-report-button-1week {
+    position: absolute;
+    top: 15px;
+    left: 5px;
+    width: 150px; 
+    height: 40px;
+}
+
+#scooters-report-div-past {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    width: 160px;
+    height: 5%;
+    margin: -10px 0 0 80px;
+    background-color: #79C5F2;
+}
+
+#scooters-report-button-past {
+    position: absolute;
+    top: 15px;
+    left: 5px;
+    width: 150px; 
+    height: 40px;
+}
+
