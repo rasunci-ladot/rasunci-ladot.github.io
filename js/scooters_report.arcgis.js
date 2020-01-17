@@ -61,27 +61,27 @@ require([
                     }
                 }
             };
-            layerLADOT = makeDataLayer('/cgi-bin/scooters_report_ladot.cgi', true, renderLADOT);
+            layerLADOT = makeDataLayer('/res/scooters_report_ladot.geojson', true, renderLADOT);
             map.add(layerLADOT);
         }
 
         mapScootersReportToday = function() {
             let renderToday = pointRenderer(4, 'red');
-            let layer = makeDataLayer('/cgi-bin/scooters_report_today.cgi', true, renderToday);
+            let layer = makeDataLayer('/res/scooters_report_today.geojson', true, renderToday);
             map.add(layer);
             return layer;
         }        
 
         mapScootersReport1Week = function() {
             let render1Week = pointRenderer(4, 'yellow');
-            let layer = makeDataLayer('/cgi-bin/scooters_report_1week.cgi', false, render1Week);
+            let layer = makeDataLayer('/res/scooters_report_1week.geojson', false, render1Week);
             map.add(layer);
             return layer;
         }
 
         mapScootersReportPast = function() {
             let renderPast = pointRenderer(4, 'gray');
-            let layer = makeDataLayer('/cgi-bin/scooters_report_past.cgi', false, renderPast);
+            let layer = makeDataLayer('/res/scooters_report_past.geojson', false, renderPast);
             map.add(layer);
             return layer;
         }
