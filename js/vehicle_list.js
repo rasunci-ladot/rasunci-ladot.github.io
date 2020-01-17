@@ -96,7 +96,7 @@ function PageInit() {
 function getSomeData() {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/cgi-bin/vehicle_list100.cgi");
+        xhr.open("GET", "/res/vehicle_list100.json");
         xhr.onload = function () {
             if (xhr.status == 200) {
                 resolve(xhr.responseText);
@@ -146,7 +146,7 @@ function makeList(responseText) {
 function getAllData() {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/cgi-bin/vehicle_list.cgi");
+        xhr.open("GET", "/res/vehicle_list.json");
         xhr.onload = function () {
             if (xhr.status == 200) {
                 resolve(xhr.responseText);
