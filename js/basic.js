@@ -52,7 +52,7 @@ function MakeNavButtons() {
     return React.createElement(
         React.Fragment,
         null,
-        React.createElement(NavButton, { className: 'navbar', id: 'navbar-00', img: '/img/la_logo.svg', width: '80px', height: '80px', url: '/home' }),
+        React.createElement(NavButton, { className: 'navbar', id: 'navbar-00', img: '/img/la-logo.svg', width: '80px', height: '80px', url: '/home' }),
         React.createElement(NavButton, { className: 'navbar', id: 'navbar-01', img: '/img/micro-scooter-svgrepo-com.svg', url: '/gray/scooters_report.html' }),
         React.createElement(NavButton, { className: 'navbar', id: 'navbar-02', img: '/img/list-svgrepo-com.svg', url: '/gray/vehicle_list.html' }),
         React.createElement(NavButton, { className: 'navbar', id: 'navbar-03', img: '/img/locator-pointing-on-map-svgrepo-com.svg', url: '/gray/area_map.html' }),
