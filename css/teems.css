@@ -3,10 +3,20 @@ body.gray {
 }
 
 .fonts-std {
+    font-family: arial;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.fonts-std-c {
     text-align: center;
     font-family: arial;
-    font-size: 18px;
+    font-size: 16px;
     text-decoration: none;
+}
+
+.hilite {
+    background-color: yellow;
 }
 
 #div-toolbar {
@@ -21,17 +31,28 @@ body.gray {
     background-color: white;
 }
 
-.tools-size {
+.toolbar-font {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.toolbar-size {
+    width: 60px;
+    height: 60px;
+}
+
+.toolbar-size-large {
     width: 80px;
     height: 80px;
 }
 
-.tools-font {
-    font-size: 25px;
-    font-weight: bold;
+.toolbar-button {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 20px;
 }
 
-.tools-button {
+.toolbar-button-large {
     border: 1px solid black;
     border-radius: 5px;
     padding: 10px;
@@ -53,12 +74,6 @@ body.gray {
     position: absolute;
     top: 200px;
     left: 0px;
-}
-
-.block-center {
-    text-align: center;
-    display: block;
-    margin: 0 auto;
 }
 
 #div-map {
@@ -83,11 +98,12 @@ body.gray {
     margin: -200px 0 0 -300px;
     background-color: white;
     padding: 10px;
+    visibility: hidden;
 }
 
 #div-validate-text {
     position: absolute;
-    top: 10px;
+    top: 15px;
     left: 50%;
     width: 300px;
     height: 20px;
@@ -96,20 +112,30 @@ body.gray {
 
 #input-validate {
     position: absolute;
-    top: 50px;
+    top: 45px;
     left: 50%;
-    width: 400px;
-    height: 25px;
-    margin: 0 0 0 -200px;
+    width: 450px;
+    height: 20px;
+    margin: 0 0 0 -225px;
 }
 
 #button-validate {
     border-radius: 5px;
     position: absolute;
-    top: 100px;
+    top: 85px;
     left: 50%;
     width: 140px;
-    height: 50px;
+    height: 40px;
     margin: 0 0 0 -70px;
 }
 
+#list-validate {
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    width: 450px;
+    margin: 0 0 0 -225px;
+    padding: 0px;
+    list-style-type: none;
+    overflow-wrap: break-word;
+}
