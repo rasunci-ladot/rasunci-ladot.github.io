@@ -24,7 +24,7 @@ class CandidateItem extends React.Component {
     }
 
     render() {
-         return e('li', {
+        return e('li', {
             className: this.state.fontSetting,
             id: this.props.id,
             onClick: this.handleClick,
@@ -36,7 +36,7 @@ class CandidateItem extends React.Component {
     }
 }
 
-class CandidatesList extends React.Component {
+class CandidateList extends React.Component {
     constructor(props) {
         super(props);
         this.updateCandidates = this.updateCandidates.bind(this);
@@ -56,10 +56,10 @@ class CandidatesList extends React.Component {
         let i;
         for (i=0; i<len; i++) {
             let address = json.candidates[i].address;
-            // Use a hashtable to create a list of unique addresses
+            // Create a list of unique addresses
             if (typeof(addresses[address]) === 'undefined') {
-                addresses[address] = i; // Only addresses NOT already defined get added
-                ordered.push(address);
+                addresses[address] = i; // Hashtable adds only addresses NOT already defined
+                ordered.push(address);  // Save in array
             }
         }
         this.setState({candidates: ordered});
@@ -88,7 +88,7 @@ class CandidatesList extends React.Component {
     }
 }
 
-class CandidatesForm extends React.Component {
+class CandidateForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -97,7 +97,6 @@ class CandidatesForm extends React.Component {
             buttonIsDisabled: true,
             location: '',
         };
-        this.listValidateRef = React.createRef();
     }
 
     handleChange(event) {
@@ -111,13 +110,25 @@ class CandidatesForm extends React.Component {
         this.setState({location: event.target.value});
     }
 
-    getCandidates() {
-        let url = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates';
-        let query = '?SingleLine=' + this.state.location + ', los angeles, ca&f=pjson';
+    handleError(statusText) {
+        console.log(statusText);
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+
+        let url = this.props.arcgisURL;
+        let query = this.state.location;
+        if (query.match(/los angeles/i)) {
+            url += query + this.props.arcgisFormat;
+        }
+        else {
+            url += query + this.props.arcgisCity + this.props.arcgisFormat;
+        }
     
-        return new Promise(function(resolve, reject) {
+        let promise = new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', url + query);
+            xhr.open('GET', url);
             xhr.onload = function() {
                 if (xhr.status == 200) {
                     resolve(xhr.responseText);
@@ -130,15 +141,8 @@ class CandidatesForm extends React.Component {
             };
             xhr.send();
         });
-    }
 
-    handleError(statusText) {
-        console.log(statusText);
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        this.getCandidates().then(this.props.listRef.current.updateCandidates, this.handleError);
+        promise.then(this.props.listRef.current.updateCandidates, this.handleError);
     }
 
     render() {
@@ -147,57 +151,54 @@ class CandidatesForm extends React.Component {
                 className: this.props.inputClassName,
                 id: this.props.inputId,
                 onChange: this.handleChange,
-                }
-            ),
+            }),
             e('button', {
                 type: 'submit',
                 className: this.props.buttonClassName,
                 id: this.props.buttonId,
                 disabled: this.state.buttonIsDisabled,
                 },
-                'VALIDATE'
+                this.props.buttonFace
             ),
         );
     }
 }
 
-class CandidatesPanel extends React.Component {
-    constructor(props) {
-        super(props);
-        this.listRef = React.createRef();
-    }
+function makeCandidatePanel() {
+    // Create a pointer to CandidateList
+    let listRef = React.createRef();
 
-    render() {
-        return e(
-            React.Fragment,
-            null,
-            e('div', {
-                className: 'fonts-std-c toolbar-font',
-                id: 'div-validate-text'
-                },
-                'Enter Location'
-            ),
-            e(CandidatesForm, {
-                inputClassName: 'fonts-std-c',
-                inputId: 'input-validate',
-                buttonClassName: 'fonts-std-c toolbar-font',
-                buttonId: 'button-validate',
-                listRef: this.listRef,
-                }
-            ),
-            e(CandidatesList, {
-                ref: this.listRef,
-                className: 'fonts-std',
-                id: 'list-validate',
-                itemClassName: 'fonts-std',
-                itemHilites: 'fonts-std hilite',
-                }
-            ),
-        );
-    }
+    return e(
+        React.Fragment,
+        null,
+        e('div', {
+            className: 'fonts-std-c toolbar-font',
+            id: 'div-validate-text'
+            },
+            'Enter Location'
+        ),
+        e(CandidateForm, {
+            inputClassName: 'fonts-std-c',
+            inputId: 'input-validate',
+            buttonClassName: 'fonts-std-c toolbar-font',
+            buttonId: 'button-validate',
+            buttonFace: 'VALIDATE',
+            listRef: listRef, // Pass listRef pointer to CandidateForm so it can update CandidateList
+            arcgisURL: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine=',
+            arcgisCity: ',los angeles,ca',
+            arcgisFormat: '&f=pjson',
+        }),
+        e(CandidateList, {
+            ref: listRef,
+            className: 'fonts-std',
+            id: 'list-validate',
+            itemClassName: 'fonts-std',
+            itemHilites: 'fonts-std hilite',
+        }),
+    );
 }
 
 function RequesterMain() {
-    ReactDOM.render(e(CandidatesPanel, null), document.getElementById('div-validate'));
+    ReactDOM.render(e(makeCandidatePanel, {}), document.getElementById('div-validate'));
 }
 

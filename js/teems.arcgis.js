@@ -17,7 +17,7 @@ require([
     ],
     function(Map, MapView, GeoJSONLayer, SimpleRenderer, Graphic, SimpleLineSymbol, Polyline) {
         var map = new Map({
-            basemap: 'gray-vector'
+            basemap: 'streets-vector'
         });
 
         var view = new MapView({
