@@ -27,6 +27,8 @@ require([
             zoom: 11
         });
 
+        window.view = view;
+
         function pointRenderer(size=4, color='black') {
             return ({
                 type: 'simple',

@@ -1,5 +1,7 @@
 'use strict';
 
+const e = React.createElement;
+
 class ToolbarButton extends React.Component {
     constructor(props) {
         super(props);
@@ -19,8 +21,8 @@ class ToolbarButton extends React.Component {
 function makeToolbar() {
     function handleOpenPanel() {
         document.getElementById('div-validate').style.visibility = 'visible';
-        document.getElementById('input-validate').value = '';
-        document.getElementById('input-validate').focus();
+        //document.getElementById('input-validate').value = '';
+        //document.getElementById('input-validate').focus();
     }
 
     function handleGoTo() {
@@ -57,9 +59,5 @@ function makeToolbar() {
             })
         }),
     );
-}
-
-function ToolsMain() {
-    ReactDOM.render(e(makeToolbar, {}), document.getElementById('div-toolbar'));
 }
 
