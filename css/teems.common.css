@@ -21,17 +21,17 @@
     background-color: yellow;
 }
 
-.toolbar-font {
+.toolbar-button-font {
     font-size: 22px;
     font-weight: bold;
 }
 
-.toolbar-size {
+.toolbar-button-size {
     width: 60px;
     height: 60px;
 }
 
-.toolbar-size-large {
+.toolbar-button-size-large {
     width: 80px;
     height: 80px;
 }
@@ -39,12 +39,16 @@
 .toolbar-button {
     border: 1px solid black;
     border-radius: 5px;
+    width: 100px;
+    height: 100px;
     padding: 20px;
 }
 
 .toolbar-button-large {
     border: 1px solid black;
     border-radius: 5px;
+    width: 100px;
+    height: 100px;
     padding: 10px;
 }
 
@@ -55,10 +59,19 @@
 
 .close-button {
     border: 1px solid black;
+    border-radius: 5px;
     position: absolute;
     top: 1px;
-    left: calc(100% - 31px);
+    left: calc(100% - 33px);
     padding: 0px;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
 }
 
 /* ID's    ***********************************************/
@@ -75,19 +88,19 @@
     background-color: white;
 }
 
-#div-toolbar-00 {
+#button-toolbar-00 {
     position: absolute;
     top: 0px;
     left: 0px;
 }
 
-#div-toolbar-01 {
+#button-toolbar-01 {
     position: absolute;
     top: 100px;
     left: 0px;
 }
 
-#div-toolbar-02 {
+#button-toolbar-02 {
     position: absolute;
     top: 200px;
     left: 0px;
