@@ -164,6 +164,7 @@ class CandidateForm extends React.Component {
 
         return e('form', {onSubmit: this.handleOnSubmit},
             e('label', {id: dateRange.labelId}, dateRange.labelText),
+/*
             e('label', {id: startDate.labelId}, startDate.labelText),
             e('input', {
                 type: 'text',
@@ -192,6 +193,9 @@ class CandidateForm extends React.Component {
                     src: endDate.imgSrc,
                 }),
             ),
+*/
+            e(DatePickerFragment, {date: startDate}),
+            e(DatePickerFragment, {date: endDate}),
             e('label', {id: location.labelId}, location.labelText),
             e('input', {
                 type: 'text',
@@ -301,6 +305,7 @@ function makeToolbar() {
 }
 
 function pageInit() {
+/*
     let date = new Date();
     console.log('date='+date);
     //let newDate = new Date('February 1, 2020');
@@ -329,7 +334,7 @@ function pageInit() {
             else {console.log('last: not leap year');}
         }
     }
-
+*/
     makeToolbar();
     makeCandidatePanel();
 

@@ -118,3 +118,15 @@
     overflow-wrap: break-word;
 }
 
+#div-wo {
+    border: 1px solid black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 450px;
+    margin: -250px 0 0 -300px;
+    background-color: white;
+    visibility: hidden;
+}
+
