@@ -79,6 +79,24 @@
     display: none;
 }
 
+.cal-table {
+    border: 1px solid black;
+    border-radius: 5px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+}
+
+.cal-th-month {
+}
+
+.cal-td-date {
+    font-family: arial;
+    font-size: 16px;
+    text-decoration: none;
+}
+
 /* ID's    ***********************************************/
 
 #div-toolbar {

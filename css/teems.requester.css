@@ -34,7 +34,7 @@
 #label-start-date {
     position: absolute;
     top: 45px;
-    left: 20px;
+    left: 30px;
     width: 200px;
     height: 20px;
 }
@@ -42,7 +42,7 @@
 #input-start-date {
     position: absolute;
     top: 85px;
-    left: 20px;
+    left: 30px;
     width: 100px;
     height: 20px;
 }
@@ -50,9 +50,19 @@
 #button-start-date {
     position: absolute;
     top: 45px;
-    left: 150px;
+    left: 160px;
     width: 50px;
     height: 50px;
+}
+
+#div-start-date-cal {
+    position: absolute;
+    top: 45px;
+    left: 30px;
+    width: 250px;
+    height: 200px;
+    background-color: white;
+    z-index: 10;
 }
 
 #label-end-date {
@@ -77,6 +87,16 @@
     left: 450px;
     width: 50px;
     height: 50px;
+}
+
+#div-end-date-cal {
+    position: absolute;
+    top: 45px;
+    left: 320px;
+    width: 250px;
+    height: 200px;
+    background-color: white;
+    z-index: 10;
 }
 
 #label-location {

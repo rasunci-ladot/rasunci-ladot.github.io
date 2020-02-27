@@ -230,6 +230,8 @@ function makeCandidatePanel() {
         buttonId: 'button-start-date',
         imgClassName: 'cal-button',
         imgSrc: '/img/foo.png',
+        calendarId: 'div-start-date-cal',
+        calendarTableClassName: 'cal-table',
     };
 
     let endDate = {
@@ -239,6 +241,8 @@ function makeCandidatePanel() {
         buttonId: 'button-end-date',
         imgClassName: 'cal-button',
         imgSrc: '/img/foo.png',
+        calendarId: 'div-end-date-cal',
+        calendarTableClassName: 'cal-table',
     };
 
     let location = {

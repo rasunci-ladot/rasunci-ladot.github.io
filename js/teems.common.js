@@ -91,16 +91,24 @@ class PanelFragment extends React.Component {
 class CalendarDate extends React.Component {
     constructor(props) {
         super(props);
+        this.handleOnMouseOver = this.handleOnMouseOver.bind(this);
         this.handleOnClick = this.handleOnClick.bind(this);
     }
 
+    handleOnMouseOver() {
+    }
+
     handleOnClick() {
+        console.log('CalendarDate: date='+event.target.dataset.date);
+        this.props.handleOnClick(event.target.dataset.date);
     }
 
     render() {
         return e('td', {
             id: this.props.id,
             className: this.props.className,
+            onClick: this.handleOnClick,
+            'data-date': this.props.value,
             },
             this.props.value
         );
@@ -156,12 +164,12 @@ class Calendar extends React.Component {
         let calWeekDay = calDate.getDay(); // First day of month
 
         let calendar = [];
-        // If First day of month is not Sunday, get details of last month to display
+        // If First day of month is not 0 (Sunday), display details of last month
         if (calWeekDay > 0) {
             // Assume current month=Jan. So last month=Dec. So it has 31 days
             let lastMonth = 11;
             let daysInLastMonth = 31;
-            // If current month is NOT Jan...
+            // If current month is NOT Jan
             if (monthDays.month > 0) {
                 lastMonth = monthDays.month - 1;
                 let lastMonthDays = getMonthDays(lastMonth, this.state.year);
@@ -187,25 +195,36 @@ class Calendar extends React.Component {
             // console.log('i,j='+i+','+j);
             calendar.push(j);
         }
-        console.log('calendar='+calendar);
 
         let tbody = [];
         for (let i=0; i<6; i++) {
-            let row = [];
+            let tr = [];
             for (let j=0; j<7; j++) {
-                row.push(e(CalendarDate, {
+                tr.push(e(CalendarDate, {
                     key: i*7+j, // Warning suppression
-                    value: calendar[i*7+j]
+                    className: 'fonts-std-c',
+                    value: calendar[i*7+j],
+                    handleOnClick: this.props.handleOnClick,
                 }));
             }
             tbody.push(e('tr', {
-                key: i,
+                key: i, // Warning suppression
                 },
-                row
+                tr
             ));
         }
+
         return e('table', {
+            className: this.props.className,
             },
+            e('thead', {
+                },
+                e('tr',{},
+                    e('th', {className: 'fonts-std-c'}, '<'),
+                    e('th', {className: 'fonts-std-c', colSpan: '5'}, monthDays.month.toUpperCase()),
+                    e('th', {className: 'fonts-std-c'}, '>'),
+                ),
+            ),
             e('tbody', {
                 },
                 tbody
@@ -217,42 +236,75 @@ class Calendar extends React.Component {
 class DatePickerFragment extends React.Component {
     constructor(props) {
         super(props);
+        this.inputHandleOnChange = this.inputHandleOnChange.bind(this);
+        this.buttonHandleOnClick = this.buttonHandleOnClick.bind(this);
+        this.calendarHandleOnClick = this.calendarHandleOnClick.bind(this);
+        this.state = {
+            isCalVisible: false,
+            date: '',
+        };
     }
 
+    inputHandleOnChange(arg) {
+        console.log('DatePickerFragment.inputHandleOnChange: arg='+arg);
+        this.setState({date: arg});
+    }
+
+    buttonHandleOnClick() {
+        this.setState({isCalVisible: true});
+    }
+
+    calendarHandleOnClick(arg) {
+        console.log('DatePickerFragment.calendarHandleOnChange: arg='+arg);
+        this.setState({isCalVisible: false});
+        this.inputHandleOnChange(arg);
+    }
 
     render() {
         let date = this.props.date;
+        let calendarDivClassName = 'hide';
+        if (this.state.isCalVisible) {
+            calendarDivClassName = 'show';
+        }
 
         let datePicker = [
             e('label', {
-                key: 0, // Warning supperssion
+                key: 0, // Warning suppression
                 id: date.labelId,
                 className: date.labelClassName,
                 },
                 date.labelText
             ),
             e('input', {
-                key: 1, // Warning supperssion
+                key: 1, // Warning suppression
                 type: 'text',
                 id: date.inputId,
                 className: date.inputClassName,
+                onChange: this.inputHandleOnChange,
+                value: this.state.date,
             }),
             e('button', {
-                key: 2, // Warning supperssion
+                key: 2, // Warning suppression
                 type: 'button',
                 id: date.buttonId,
                 className: date.buttonClassName,
+                onClick: this.buttonHandleOnClick,
                 },
                 e('img', {
                     className: date.imgClassName,
                     img: date.imgSrc,
                 }),
             ),
-            e(Calendar, {
-                key: 3, // Warning supperssion
+            e('div', {
+                key: 3, // Warning suppression
                 id: date.calendarId,
-                className: date.calendarClassName,
-            }),
+                className: calendarDivClassName,
+                },
+                e(Calendar, {
+                    className: date.calendarTableClassName,
+                    handleOnClick: this.calendarHandleOnClick,
+                }),
+            ),
         ];
 
         return e(React.Fragment, null, datePicker);
