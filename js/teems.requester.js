@@ -28,7 +28,7 @@ class CandidateItem extends React.Component {
     render() {
         let fontSetting = this.props.className;
         if (this.state.onMouseOver) {
-            fontSetting += ' .hilites';
+            fontSetting += ' hilite';
         }
 
         return e('li', {
@@ -156,47 +156,30 @@ class CandidateForm extends React.Component {
 
     render() {
         let dateRange = this.props.dateRange;
-        //console.log('CandidateForm.render: dateRange='+dateRange);
         let startDate = this.props.startDate;
         let endDate = this.props.endDate;
         let location = this.props.location;
         let validate = this.props.validate;
 
-        return e('form', {onSubmit: this.handleOnSubmit},
-            e('label', {id: dateRange.labelId}, dateRange.labelText),
-/*
-            e('label', {id: startDate.labelId}, startDate.labelText),
-            e('input', {
-                type: 'text',
-                id: startDate.inputId,
-            }),
-            e('button', {
-                type: 'button',
-                id: startDate.buttonId,
+        return e('form', {
+                onSubmit: this.handleOnSubmit
+            },
+            e('label', {
+                id: dateRange.labelId
                 },
-                e('img', {
-                    className: startDate.imgClassName,
-                    src: startDate.imgSrc,
-                }),
+                dateRange.labelText
             ),
-            e('label', {id: endDate.labelId}, endDate.labelText),
-            e('input', {
-                type: 'text',
-                id: endDate.inputId,
+            e(DatePickerFragment, {
+                date: startDate
             }),
-            e('button', {
-                type: 'button',
-                id: endDate.buttonId,
+            e(DatePickerFragment, {
+                date: endDate
+            }),
+            e('label', {
+                id: location.labelId
                 },
-                e('img', {
-                    className: endDate.imgClassName,
-                    src: endDate.imgSrc,
-                }),
+                location.labelText
             ),
-*/
-            e(DatePickerFragment, {date: startDate}),
-            e(DatePickerFragment, {date: endDate}),
-            e('label', {id: location.labelId}, location.labelText),
             e('input', {
                 type: 'text',
                 id: location.inputId,
@@ -220,8 +203,6 @@ function makeCandidatePanel() {
         labelId: 'label-date-range',
         labelText: 'Enter Date Range',
     };
-    //console.log('makeCandidatePanel: dateRange.labelId='+dateRange.labelId);
-    //console.log('makeCandidatePanel: dateRange.labelText='+dateRange.labelText);
 
     let startDate = {
         labelId: 'label-start-date',
@@ -229,9 +210,9 @@ function makeCandidatePanel() {
         inputId: 'input-start-date',
         buttonId: 'button-start-date',
         imgClassName: 'cal-button',
-        imgSrc: '/img/foo.png',
-        calendarId: 'div-start-date-cal',
-        calendarTableClassName: 'cal-table',
+        imgSrc: '/img/cal-day-one.svg',
+        calId: 'div-start-date-cal',
+        calTableClassName: 'cal-table',
     };
 
     let endDate = {
@@ -240,9 +221,9 @@ function makeCandidatePanel() {
         inputId: 'input-end-date',
         buttonId: 'button-end-date',
         imgClassName: 'cal-button',
-        imgSrc: '/img/foo.png',
-        calendarId: 'div-end-date-cal',
-        calendarTableClassName: 'cal-table',
+        imgSrc: '/img/cal-day-one.svg',
+        calId: 'div-end-date-cal',
+        calTableClassName: 'cal-table',
     };
 
     let location = {
@@ -287,7 +268,7 @@ function makeCandidatePanel() {
 }
 
 function makeToolbar() {
-    let buttons = [{
+    let buttonProps = [{
             id: 'button-toolbar-00',
             className: 'toolbar-button-large toolbar-button-size-large',
             img: '/img/la-logo.svg',
@@ -305,43 +286,12 @@ function makeToolbar() {
         },
     ];
 
-    ReactDOM.render(e(ToolbarFragment, {buttons: buttons}), document.getElementById('div-toolbar'));
+    ReactDOM.render(e(ToolbarFragment, {buttons: buttonProps}), document.getElementById('div-toolbar'));
 }
 
 function pageInit() {
-/*
-    let date = new Date();
-    console.log('date='+date);
-    //let newDate = new Date('February 1, 2020');
-    let newDate = new Date('2/1/2020');
-    console.log('newDate='+newDate);
-    console.log('newDate: day='+newDate.getDay());
-    let checkDate = new Date();
-    console.log('checkDate='+checkDate);
-
-    let sysDate = new Date();
-    let year = sysDate.getFullYear();
-    console.log('year='+year);
-    let month = sysDate.getMonth();
-    month++;
-    console.log('month='+month);
-    let helperDate = new Date(month+'/1/'+year);
-    let day = helperDate.getDay();
-    console.log('day='+day);
-    console.log('month/day/year='+month+'/1/'+year+', day='+day);
-
-    if (year % 400 == 0) {console.log('400: leap year');}
-    else {
-        if (year % 100 == 0) {console.log('100: not leap year');}
-        else {
-            if (year % 4 == 0) {console.log('4: leap year');}
-            else {console.log('last: not leap year');}
-        }
-    }
-*/
     makeToolbar();
     makeCandidatePanel();
-
-    ReactDOM.render(e(Calendar, {}), document.getElementById('div-wo'));
+    ReactDOM.render(e(CalendarTable, {}), document.getElementById('div-wo'));
 }
 
