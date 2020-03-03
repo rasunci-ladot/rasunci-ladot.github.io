@@ -1,24 +1,67 @@
 'use strict';
 
 const e = React.createElement;
+const EMERG  = 1;   // System is unusable
+const ALERT  = 3;   // Action must be taken immediately
+const CRIT   = 7;   // Critical conditions
+const ERR    = 15;  // Error conditions
+const WARN   = 31;  // Warning conditions
+const NOTICE = 63;  // Normal, but significant, condition
+const INFO   = 127; // Informational message
+const DEBUG  = 255; // Debug-level message
+const LOGLEVEL = INFO;
+
+function logDebug(msg) {
+    if (LOGLEVEL & 128) {console.log(msg);}
+}
+
+function logInfo(msg) {
+    if (LOGLEVEL & 64) {console.log(msg);}
+}
+
+function logWarn(msg) {
+    if (LOGLEVEL & 16) {console.log(msg);}
+}
+
+function logErr(msg) {
+    if (LOGLEVEL & 8) {console.log(msg);}
+}
+
+function logAlert(msg) {
+    if (LOGLEVEL & 2) {console.log(msg); alert(msg);}
+}
+
+// printf %02d
+function printf02d(i) {
+    let padded = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
+    if (i > -1 && i < 10) {
+        return padded[i];
+    }
+    return i.toString();
+}
 
 class ToolbarButton extends React.Component {
     constructor(props) {
         super(props);
+        this.handleOnClick = this.handleOnClick.bind(this);
+    }
+
+    handleOnClick() {
+        this.props.handleOnClick();
     }
 
     render() {
+        logDebug('ToolbarButton.render');
         return(e('button', {
             type: 'button',
             id: this.props.id,
             className: this.props.className,
-            onClick: this.props.handleOnClick,
+            onClick: this.handleOnClick,
             },
             e('img', {
                 className: this.props.imgClassName,
                 src: this.props.img,
-                }
-            ),
+            }),
         ));
     }
 }
@@ -29,44 +72,49 @@ class ToolbarFragment extends React.Component {
     }
 
     render() {
-        let buttons = this.props.buttons;
+        logDebug('ToolbarFragment.render');
+        let buttonDetails = this.props.buttonDetails;
         let toolbar = [];
-        for (let i=0; i<buttons.length; i++) {
+        for (let i=0; i<buttonDetails.length; i++) {
             toolbar.push(e(ToolbarButton, {
                 key: i, // Warning suppression
-                id: buttons[i].id,
-                className: buttons[i].className,
-                handleOnClick: buttons[i].handleOnClick,
-                img: buttons[i].img,
-                imgClassName: buttons[i].imgClassName,
-                },
-            ));
+                id: buttonDetails[i].id,
+                className: buttonDetails[i].className,
+                handleOnClick: buttonDetails[i].handleOnClick,
+                img: buttonDetails[i].img,
+                imgClassName: buttonDetails[i].imgClassName,
+            }));
         }
-        return e(React.Fragment, null, toolbar);
+
+        return e(
+            React.Fragment, {
+            },
+            toolbar,
+        );
     }
 }
 
-class CloseButton extends React.Component {
+class PanelButton extends React.Component {
     constructor(props) {
         super(props);
         this.handleOnClick = this.handleOnClick.bind(this);
     }
 
     handleOnClick() {
-        document.getElementById(this.props.panelId).style.visibility = 'hidden';
+        this.props.handleOnClick();
     }
 
     render() {
+        logDebug('PanelButton.render');
         return(e('button', {
             type: 'button',
-            className: 'close-button close-button-size',
+            className: 'panel-button panel-button-size',
             onClick: this.handleOnClick,
             },
             e('img', {
-                className: 'close-button-img-size',
+                className: 'panel-button-img-size',
                 src: '/img/window-close.png',
-                }
-            ),
+            }),
         ));
     }
 }
@@ -77,13 +125,12 @@ class PanelFragment extends React.Component {
     }
 
     render() {
-        return(e(
-            React.Fragment, {
+        logDebug('PanelFragment.render');
+        return(e(React.Fragment, {
             },
-            e(CloseButton, {
-                panelId: this.props.panelId,
-                }
-            ),
+            e(PanelButton, {
+                handleOnClick: this.props.handleOnClick,
+            }),
             this.props.elements,
         ));
     }
@@ -92,13 +139,19 @@ class PanelFragment extends React.Component {
 class CalendarTd extends React.Component {
     constructor(props) {
         super(props);
+        this.handleOnClick = this.handleOnClick.bind(this);
         this.handleOnMouseOver = this.handleOnMouseOver.bind(this);
         this.handleOnMouseOut = this.handleOnMouseOut.bind(this);
-        this.handleOnClick = this.handleOnClick.bind(this);
-        this.zeroPad = this.zeroPad.bind(this);
         this.state = {
             isMouseOver: false,
         };
+    }
+
+    handleOnClick(event) {
+        let month = printf02d(event.target.dataset.month);
+        let date = printf02d(event.target.dataset.date);
+        let year = event.target.dataset.year;
+        this.props.handleOnClick(month+'/'+date+'/'+year);
     }
 
     handleOnMouseOver() {
@@ -109,22 +162,8 @@ class CalendarTd extends React.Component {
         this.setState({isMouseOver: false});
     }
 
-    handleOnClick(event) {
-        let month = this.zeroPad(event.target.dataset.month);
-        let date = this.zeroPad(event.target.dataset.date);
-        let year = event.target.dataset.year;
-        this.props.handleOnClick(month+'/'+date+'/'+year);
-    }
-
-    zeroPad(i) {
-        let padded = ['dummy', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
-        if (i > 0 && i < 10) {
-            return padded[i];
-        }
-        return i.toString();
-    }
-
     render() {
+        logDebug('CalendarTd.render');
         let className = this.props.className;
         if (this.state.isMouseOver) {
             className += ' hilite';
@@ -150,7 +189,7 @@ class CalendarTable extends React.Component {
         this.handleOnClickLeftArrow = this.handleOnClickLeftArrow.bind(this);
         this.handleOnClickRightArrow = this.handleOnClickRightArrow.bind(this);
         this.getDaysInMonth = this.getDaysInMonth.bind(this);
-        this.monthNumber2Name = this.monthNumber2Name.bind(this);
+        this.getMonthName = this.getMonthName.bind(this);
         this.makeCalData = this.makeCalData.bind(this);
         let sysDate = new Date();
         this.state = {
@@ -160,25 +199,29 @@ class CalendarTable extends React.Component {
     }
 
     handleOnClickLeftArrow() {
-        // Assume month=Dec and year=last year
+        // Assume current month=Jan, so let previous month=Dec
         let month = 11;
         let year = this.state.year - 1;
+        // Change month & year if current month!=Jan
         if (this.state.month > 0) {
             month = this.state.month - 1;
             year = this.state.year;
         }
+        logDebug('CalendarTable.handleOnClickLeftArrow: month='+month+', year='+year);
         this.setState({month: month});
         this.setState({year: year});
     }
 
     handleOnClickRightArrow() {
-        // Assume month=Jan and year=next year
+        // Assume current month=Dec, so let next month=Jan
         let month = 0;
         let year = this.state.year + 1;
+        // Change month & year if current month!=Dec
         if (this.state.month < 11) {
             month = this.state.month + 1;
             year = this.state.year;
         }
+        logDebug('CalendarTable.handleOnClickRightArrow: month='+month+', year='+year);
         this.setState({month: month});
         this.setState({year: year});
     }
@@ -194,15 +237,13 @@ class CalendarTable extends React.Component {
         else if (year % 4 == 0) {
             daysInFeb = 29;
         }
-        //else {
-        //    daysInFeb = 28;
-        //}
 
         let daysInMonth = [31, daysInFeb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        logDebug('CalendarTable.getDaysInMonth: daysInMonth='+daysInMonth);
         return daysInMonth[month];
     }
 
-    monthNumber2Name(month) {
+    getMonthName(month) {
         let months = [
             'January',
             'February',
@@ -221,51 +262,67 @@ class CalendarTable extends React.Component {
     }
 
     makeCalData() {
-        let month = this.state.month;
+        let month = this.state.month; // Jan=0, Dec=11
         let year = this.state.year;
-        let adjustedMonth = month + 1; // Jan=1, Dec=12
-        let calDate = new Date(adjustedMonth+'/1/'+year); // First day of month
-        let calWeekDay = calDate.getDay(); // Get corresponding day of the week
-        let calDays = this.getDaysInMonth(month, year);
         let calData = [];
+        let daysInMonth;
+        let displayMonth;
+        let displayYear;
+        let normalMonth; // Jan=1, Dec=12
 
-        // If First day of month is not Sunday, show days from last month
+        // If first day of month is not Sunday, show days from last month
+        let calDate = new Date((month+1).toString()+'/1/'+year);
+        let calWeekDay = calDate.getDay(); // 0=Sun, 6=Sat
         if (calWeekDay > 0) {
-            // Assume current month=Jan. So last month=Dec (31 days)
-            let lastMonth = 11;
-            let lastMonthCalDays = 31;
-            // If current month is NOT Jan
-            if (month > 0) {
-                lastMonth = month - 1;
-                lastMonthCalDays = this.getDaysInMonth(lastMonth, year);
+            displayMonth = month - 1;
+            displayYear = year;
+            daysInMonth = this.getDaysInMonth(displayMonth, year);
+            // If current month=Jan, last month=Dec (31 days)
+            if (month == 0) {
+                displayMonth = 11;
+                displayYear = year - 1;
+                daysInMonth = 31;
             }
-            // Populate cal array using dates from last month
-            for (let i=0, date=lastMonthCalDays-calWeekDay+1; i<calWeekDay; i++, date++) {
-                // console.log('i,j='+i+','+j);
-                calData.push({month: adjustedMonth, date: date, year: year});
+            // Populate calData using dates from last month
+            normalMonth = displayMonth + 1;
+            for (let i=0, date=daysInMonth-calWeekDay+1; i<calWeekDay; i++, date++) {
+                logDebug('CalendarTable.makeCalData: push{month: '+normalMonth+', date: '+date+', year: '+displayYear+'}');
+                calData.push({month: normalMonth, date: date, year: displayYear});
             }
         }
 
-        // Populate cal array using dates from this month
-        for (let i=calWeekDay, date=1; date<=calDays; i++, date++) {
-            // console.log('i,j='+i+','+j);
-            calData.push({month: adjustedMonth, date: date, year: year, className: 'cal-td-bold'});
+        // Populate calData using dates from this month
+        daysInMonth = this.getDaysInMonth(month, year);
+        normalMonth = month + 1;
+        for (let i=calWeekDay, date=1; date<=daysInMonth; i++, date++) {
+            logDebug('CalendarTable.makeCalData: push{month: '+normalMonth+', date: '+date+', year: '+year+'}');
+            calData.push({month: normalMonth, date: date, year: year, className: 'cal-td-bold'});
         }
 
-        // Populate cal array using dates from next month
-        let lastTd = 35;
-        if (calDays+calWeekDay > 35) {
-            lastTd = 42;
+        // Show days from next month to complete the calendar
+        displayMonth = month + 1;
+        displayYear = year;
+        // If current month=Dec, next month=Jan
+        if (month == 11) {
+            displayMonth = 0;
+            displayYear = year + 1;
         }
-        for (let i=calDays+calWeekDay, date=1; i<lastTd; i++, date++) {
-            // console.log('i,j='+i+','+j);
-            calData.push({month: adjustedMonth, date: date, year: year});
+        let lastDayOfCalendar = 35; // Last day of 5th row of calendar
+        if (daysInMonth+calWeekDay > 35) {
+            lastDayOfCalendar = 42; // Extend calendar to 6 rows
+        }
+        // Populate calData using dates from next month
+        normalMonth = displayMonth + 1;
+        for (let i=daysInMonth+calWeekDay, date=1; i<lastDayOfCalendar; i++, date++) {
+            logDebug('CalendarTable.makeCalData: push{month: '+normalMonth+', date: '+date+', year: '+displayYear+'}');
+            calData.push({month: normalMonth, date: date, year: displayYear});
         }
 
         return calData;
     }
 
     render() {
+        logDebug('CalendarTable.render');
         let thead = e('tr',{},
             e('th', {
                 className: 'cal-th',
@@ -274,14 +331,13 @@ class CalendarTable extends React.Component {
                     className: '',
                     src: '/img/left-arrow.svg',
                     onClick: this.handleOnClickLeftArrow,
-                    },
-                ),
+                }),
             ),
             e('th', {
                 className: 'cal-th',
                 colSpan: '5',
                 },
-                this.monthNumber2Name(this.state.month).toUpperCase()
+                this.getMonthName(this.state.month).toUpperCase()
             ),
             e('th', {
                 className: 'cal-th',
@@ -290,8 +346,7 @@ class CalendarTable extends React.Component {
                     className: '',
                     src: '/img/right-arrow.svg',
                     onClick: this.handleOnClickRightArrow,
-                    },
-                ),
+                }),
             ),
         );
 
@@ -301,8 +356,8 @@ class CalendarTable extends React.Component {
         for (let i=0; i<calRows; i++) {
             let tds = [];
             for (let j=0; j<7; j++) {
-                let index = i * 7 + j;
                 let className = 'cal-td';
+                let index = i * 7 + j;
                 if (typeof(calData[index].className) !== 'undefined') {
                     className = className + ' ' + calData[index].className;
                 }
@@ -313,8 +368,7 @@ class CalendarTable extends React.Component {
                     date: calData[index].date,
                     year: calData[index].year,
                     handleOnClick: this.props.handleOnClick,
-                    },
-                ));
+                }));
             }
             tbody.push(e('tr', {
                 key: i, // Warning suppression
@@ -364,46 +418,49 @@ class DatePickerFragment extends React.Component {
     }
 
     render() {
+        logDebug('DatePickerFragment.render');
         let calDivClassName = 'hide';
         if (this.state.isCalVisible) {
             calDivClassName = 'show';
         }
 
-        let date = this.props.date;
+        let label = this.props.date.label;
+        let input = this.props.date.input;
+        let button = this.props.date.button;
+        let cal = this.props.date.cal;
         return(e(
             React.Fragment, {
             },
             e('label', {
-                id: date.labelId,
-                className: date.labelClassName,
+                id: label.id,
+                className: label.className,
                 },
-                date.labelText
+                label.text
             ),
             e('input', {
                 type: 'text',
-                id: date.inputId,
-                className: date.inputClassName,
+                id: input.id,
+                className: input.className,
                 onChange: this.handleOnChangeInput,
                 value: this.state.date,
             }),
             e('button', {
                 type: 'button',
-                id: date.buttonId,
-                className: date.buttonClassName,
+                id: button.id,
+                className: button.className,
                 onClick: this.handleOnClickButton,
                 },
                 e('img', {
-                    className: date.imgClassName,
-                    img: date.imgSrc,
-                    }
-                ),
+                    className: button.imgClassName,
+                    src: button.imgSrc,
+                }),
             ),
             e('div', {
-                id: date.calId,
+                id: cal.id,
                 className: calDivClassName,
                 },
                 e(CalendarTable, {
-                    className: date.calTableClassName,
+                    className: cal.tableClassName,
                     handleOnClick: this.handleOnClickCal,
                 }),
             ),

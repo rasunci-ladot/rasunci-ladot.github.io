@@ -20,20 +20,21 @@ class CandidateItem extends React.Component {
     }
 
     handleOnClick() {
-        //document.getElementById('div-location').style.visibility = 'hidden';
-        //window.view.zoom = 18;
+        this.props.handleOnClick();
+        window.view.zoom = 18;
         window.view.center = [this.props.x, this.props.y];
     }
 
     render() {
-        let fontSetting = this.props.className;
-        if (this.state.onMouseOver) {
-            fontSetting += ' hilite';
+        logDebug('CandidateItem.render');
+        let className = this.props.className;
+        if (this.state.isMouseOver) {
+            className += ' hilite';
         }
 
         return e('li', {
             id: this.props.id,
-            className: fontSetting,
+            className: className,
             onClick: this.handleOnClick,
             onMouseOver: this.handleOnMouseOver,
             onMouseOut: this.handleOnMouseOut,
@@ -74,18 +75,18 @@ class CandidateList extends React.Component {
     }
 
     render() {
+        logDebug('CandidateList.render');
         let ordered = this.state.candidates;
         let candidateList = [];
         for (let i=0; i<ordered.length; i++) {
             candidateList.push(e(CandidateItem, {
-                    key: i, // Suppress warnings
-                    className: this.props.itemClassName,
-                    candidate: ordered[i].address,
-                    x: ordered[i].x,
-                    y: ordered[i].y,
-                    }
-                )
-            );
+                key: i, // Warning suppression
+                className: this.props.itemClassName,
+                handleOnClick: this.props.itemHandleOnClick,
+                candidate: ordered[i].address,
+                x: ordered[i].x,
+                y: ordered[i].y,
+            }));
         }
 
         return e('ul', {
@@ -103,7 +104,7 @@ class CandidateForm extends React.Component {
         this.handleOnChange = this.handleOnChange.bind(this);
         this.handleOnSubmit = this.handleOnSubmit.bind(this);
         this.state = {
-            buttonIsDisabled: true,
+            isButtonDisabled: true,
             location: '',
         };
     }
@@ -111,15 +112,16 @@ class CandidateForm extends React.Component {
     handleOnChange(event) {
         let locLength = event.target.value.length;
         if (locLength > 0) {
-            this.setState({buttonIsDisabled: false});
+            this.setState({isButtonDisabled: false});
         }
         else {
-            this.setState({buttonIsDisabled: true});
+            this.setState({isButtonDisabled: true});
         }
         this.setState({location: event.target.value});
     }
 
     handleOnError(statusText) {
+        logErr('CandidateForm.handleOnError: statusText='+statusText);
         console.log(statusText);
     }
 
@@ -132,6 +134,7 @@ class CandidateForm extends React.Component {
             url += query + this.props.arcgis.format;
         }
         else {
+            logInfo('CandidateForm.handleOnSubmit: Inserting "los angeles, ca" to URL');
             url += query + this.props.arcgis.city + this.props.arcgis.format;
         }
     
@@ -146,49 +149,57 @@ class CandidateForm extends React.Component {
                 }
             };
             xhr.onerror = function() {
+                logErr('CandidateForm.handleOnSubmit: AJAX error');
                 reject('AJAX error');
             };
             xhr.send();
+            logInfo('CandidateForm.handleOnSubmit: XHR GET, '+url);
         });
 
         promise.then(this.props.listRef.current.updateCandidates, this.handleError);
     }
 
     render() {
-        let dateRange = this.props.dateRange;
-        let startDate = this.props.startDate;
-        let endDate = this.props.endDate;
-        let location = this.props.location;
-        let validate = this.props.validate;
+        logDebug('CandidateForm.render');
+        let labelDateRange = this.props.labelDateRange;
+        let datePickerStart = this.props.datePickerStart;
+        let datePickerEnd = this.props.datePickerEnd;
+        let labelLocation = this.props.labelLocation;
+        let inputLocation = this.props.inputLocation;
+        let buttonValidate = this.props.buttonValidate;
 
         return e('form', {
-                onSubmit: this.handleOnSubmit
+                onChange: this.handleOnChange,
+                onSubmit: this.handleOnSubmit,
             },
             e('label', {
-                id: dateRange.labelId
+                id: labelDateRange.id,
+                className: labelDateRange.className,
                 },
-                dateRange.labelText
+                labelDateRange.text
             ),
             e(DatePickerFragment, {
-                date: startDate
+                date: datePickerStart,
             }),
             e(DatePickerFragment, {
-                date: endDate
+                date: datePickerEnd,
             }),
             e('label', {
-                id: location.labelId
+                id: labelLocation.id,
+                className: labelLocation.className,
                 },
-                location.labelText
+                labelLocation.text
             ),
             e('input', {
                 type: 'text',
-                id: location.inputId,
+                id: inputLocation.id,
             }),
             e('button', {
                 type: 'submit',
-                id: validate.buttonId,
+                id: buttonValidate.id,
+                disabled: this.state.isButtonDisabled,
                 },
-                validate.buttonText,
+                buttonValidate.text,
             ),
         );
     }
@@ -199,43 +210,67 @@ function makeCandidatePanel() {
     // Create a pointer to CandidateList
     let listRef = React.createRef();
 
-    let dateRange = {
-        labelId: 'label-date-range',
-        labelText: 'Enter Date Range',
+    let labelDateRange = {
+        id: 'label-date-range',
+        className: 'fonts-std-c',
+        text: 'Enter Date Range',
     };
 
-    let startDate = {
-        labelId: 'label-start-date',
-        labelText: 'Start Date',
-        inputId: 'input-start-date',
-        buttonId: 'button-start-date',
-        imgClassName: 'cal-button',
-        imgSrc: '/img/cal-day-one.svg',
-        calId: 'div-start-date-cal',
-        calTableClassName: 'cal-table',
+    let datePickerStart = {
+        label: {
+            id: 'label-start-date',
+            className: 'fonts-std',
+            text: 'Start Date',
+        },
+        input: {
+            id: 'input-start-date',
+        },
+        button: {
+            id: 'button-start-date',
+            className: 'cal-button cal-button-size',
+            imgClassName: 'cal-button-img-size',
+            imgSrc: '/img/monthly-calendar.svg',
+        },
+        cal: {
+            id: 'div-start-date-cal',
+            tableClassName: 'cal-table',
+        },
     };
 
-    let endDate = {
-        labelId: 'label-end-date',
-        labelText: 'End Date',
-        inputId: 'input-end-date',
-        buttonId: 'button-end-date',
-        imgClassName: 'cal-button',
-        imgSrc: '/img/cal-day-one.svg',
-        calId: 'div-end-date-cal',
-        calTableClassName: 'cal-table',
+    let datePickerEnd = {
+        label: {
+            id: 'label-end-date',
+            className: 'fonts-std',
+            text: 'End Date',
+        },
+        input: {
+            id: 'input-end-date',
+        },
+        button: {
+            id: 'button-end-date',
+            className: 'cal-button cal-button-size',
+            imgClassName: 'cal-button-img-size',
+            imgSrc: '/img/monthly-calendar.svg',
+        },
+        cal: {
+            id: 'div-end-date-cal',
+            tableClassName: 'cal-table',
+        },
     };
 
-    let location = {
-        labelId: 'label-location',
-        labelText: 'Enter Location',
-        inputId: 'input-location',
+    let labelLocation = {
+        id: 'label-location',
+        className: 'fonts-std-c',
+        text: 'Enter Location',
     };
 
-    let validate = {
-        buttonId: 'button-validate',
-        buttonDisabled: true,
-        buttonText: 'VALIDATE',
+    let inputLocation = {
+        id: 'input-location',
+    };
+
+    let buttonValidate = {
+        id: 'button-validate',
+        text: 'VALIDATE',
     };
 
     let arcgis = {
@@ -247,11 +282,12 @@ function makeCandidatePanel() {
     let elements = [
         e(CandidateForm, {
             key: 1, // Warning suppression
-            dateRange: dateRange,
-            startDate: startDate,
-            endDate: endDate,
-            location: location,
-            validate: validate,
+            labelDateRange: labelDateRange,
+            datePickerStart: datePickerStart,
+            datePickerEnd: datePickerEnd,
+            labelLocation: labelLocation,
+            inputLocation: inputLocation,
+            buttonValidate: buttonValidate,
             arcgis: arcgis,
             listRef: listRef, // Allow CandidateForm to update CandidateList
         }),
@@ -261,14 +297,21 @@ function makeCandidatePanel() {
             id: 'list-location',
             className: 'fonts-std',
             itemClassName: 'fonts-std',
+            itemHandleOnClick: function(){document.getElementById('div-location').style.visibility = 'hidden';},
         }),
     ];
 
-    ReactDOM.render(e(PanelFragment, {panelId: 'div-location', elements: elements}), document.getElementById('div-location'));
+    logDebug('makeCandidatePanel ReactDOM.render');
+    ReactDOM.render(e(PanelFragment, {
+        handleOnClick: function(){document.getElementById('div-location').style.visibility = 'hidden';},
+        elements: elements,
+        }),
+        document.getElementById('div-location')
+    );
 }
 
 function makeToolbar() {
-    let buttonProps = [{
+    let buttonDetails = [{
             id: 'button-toolbar-00',
             className: 'toolbar-button-large toolbar-button-size-large',
             img: '/img/la-logo.svg',
@@ -278,6 +321,7 @@ function makeToolbar() {
             className: 'toolbar-button toolbar-button-size',
             img: '/img/new-work-order.svg',
             imgClassName: 'toolbar-button-size',
+            handleOnClick: function(){document.getElementById('div-location').style.visibility = 'visible';},
         }, {
             id: 'button-toolbar-02',
             className: 'toolbar-button toolbar-button-size',
@@ -286,12 +330,49 @@ function makeToolbar() {
         },
     ];
 
-    ReactDOM.render(e(ToolbarFragment, {buttons: buttonProps}), document.getElementById('div-toolbar'));
+    logDebug('makeToolbar ReactDOM.render');
+    ReactDOM.render(e(ToolbarFragment, {
+        buttonDetails: buttonDetails,
+        }),
+        document.getElementById('div-toolbar')
+    );
+}
+
+function makeArtPanel() {
+    let buttonDetails = [{
+            id: 'button-art-00',
+            className: 'toolbar-button toolbar-button-size',
+            img: '/img/pencil.svg',
+            imgClassName: 'toolbar-button-size',
+        }, {
+            id: 'button-art-01',
+            className: 'toolbar-button toolbar-button-size',
+            img: '/img/scissors.svg',
+            imgClassName: 'toolbar-button-size',
+        }, {
+            id: 'button-art-02',
+            className: 'toolbar-button toolbar-button-size',
+            img: '/img/hdd.svg',
+            imgClassName: 'toolbar-button-size',
+        }, {
+            id: 'button-art-03',
+            className: 'toolbar-button toolbar-button-size',
+            img: '/img/cancel.svg',
+            imgClassName: 'toolbar-button-size',
+        },
+    ];
+
+    logDebug('makeArtPanel ReactDOM.render');
+    ReactDOM.render(e(ToolbarFragment, {
+        buttonDetails: buttonDetails,
+        }),
+        document.getElementById('div-art')
+    );
 }
 
 function pageInit() {
     makeToolbar();
     makeCandidatePanel();
-    ReactDOM.render(e(CalendarTable, {}), document.getElementById('div-wo'));
+    makeArtPanel();
 }
 
