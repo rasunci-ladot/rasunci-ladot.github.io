@@ -9,8 +9,9 @@ const WARN   = 31;  // Warning conditions
 const NOTICE = 63;  // Normal, but significant, condition
 const INFO   = 127; // Informational message
 const DEBUG  = 255; // Debug-level message
+const LOGLEVEL = ERR;
 //const LOGLEVEL = INFO;
-const LOGLEVEL = DEBUG;
+//const LOGLEVEL = DEBUG;
 
 function logDebug(msg) {
     if (LOGLEVEL & 128) {console.log(msg);}
