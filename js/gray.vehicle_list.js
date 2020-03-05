@@ -175,6 +175,7 @@ function makeToolbar() {
             img: '/img/micro-scooter.svg',
             imgClassName: 'toolbar-button-size',
             handleOnClick: function() {
+                window.location.href = '/gray/scooters_report.html';
             },
         }, {
             id: 'button-toolbar-02',
@@ -182,6 +183,7 @@ function makeToolbar() {
             img: '/img/list.svg',
             imgClassName: 'toolbar-button-size',
             handleOnClick: function() {
+                window.location.href = '/gray/vehicle_list.html';
             },
         }, {
             id: 'button-toolbar-03',
@@ -189,6 +191,7 @@ function makeToolbar() {
             img: '/img/locator-pointing-on-map.svg',
             imgClassName: 'toolbar-button-size',
             handleOnClick: function() {
+                window.location.href = '/gray/area_map.html';
             },
         },
     ];
