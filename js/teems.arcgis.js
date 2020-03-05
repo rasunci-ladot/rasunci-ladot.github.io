@@ -9,18 +9,31 @@ var LAST_LAT = null;
 require([
     'esri/Map',
     'esri/views/MapView',
+    'esri/layers/TileLayer',
+    'esri/layers/FeatureLayer',
     'esri/layers/GeoJSONLayer',
     'esri/renderers/SimpleRenderer',
     'esri/Graphic',
     'esri/symbols/SimpleLineSymbol',
     'esri/geometry/Polyline'
     ],
-    function(Map, MapView, GeoJSONLayer, SimpleRenderer, Graphic, SimpleLineSymbol, Polyline) {
-        var map = new Map({
+    function(
+        Map,
+        MapView,
+        TileLayer,
+        FeatureLayer,
+        GeoJSONLayer,
+        SimpleRenderer,
+        Graphic,
+        SimpleLineSymbol,
+        Polyline
+        ){
+
+        let map = new Map({
             basemap: 'streets-vector'
         });
 
-        var view = new MapView({
+        let view = new MapView({
             container: 'div-map',
             map: map,
             center: [-118.243422, 34.051249],
@@ -28,6 +41,14 @@ require([
         });
 
         window.view = view;
+
+        // let tileLayer = new TileLayer({
+        // };
+
+        let featureLayer = new FeatureLayer({
+            url: 'http://services1.arcgis.com/tp9wqSVX1AitKgjd/arcgis/rest/services/TEAMS_WORK_ORDER_POINTshp/FeatureServer/0',
+        });
+        map.add(featureLayer);
 
         function pointRenderer(size=4, color='black') {
             return ({
@@ -82,8 +103,8 @@ require([
                 }),
                 symbol: new SimpleLineSymbol({
                     type: "simple-line",
-                    color: "black",
-                    width: "2px",
+                    color: "yellow",
+                    width: "5px",
                     style: "solid"
                 })
             });

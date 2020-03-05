@@ -20,8 +20,8 @@ class CandidateItem extends React.Component {
     }
 
     handleOnClick() {
-        this.props.handleOnClick();
-        window.view.zoom = 18;
+        this.props.handleOnClick(),
+        window.view.zoom = 17;
         window.view.center = [this.props.x, this.props.y];
     }
 
@@ -205,6 +205,11 @@ class CandidateForm extends React.Component {
     }
 }
 
+class SignInfoForm extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+}
 
 function makeCandidatePanel() {
     // Create a pointer to CandidateList
@@ -297,13 +302,21 @@ function makeCandidatePanel() {
             id: 'list-location',
             className: 'fonts-std',
             itemClassName: 'fonts-std',
-            itemHandleOnClick: function(){document.getElementById('div-location').style.visibility = 'hidden';},
+            itemHandleOnClick: function(){
+                document.getElementById('div-wo').style.visibility = 'hidden';
+                document.getElementById('div-location').style.visibility = 'hidden';
+                document.getElementById('div-art').style.visibility = 'visible';
+            },
         }),
     ];
 
     logDebug('makeCandidatePanel ReactDOM.render');
     ReactDOM.render(e(PanelFragment, {
-        handleOnClick: function(){document.getElementById('div-location').style.visibility = 'hidden';},
+        handleOnClick: function(){
+            document.getElementById('div-location').style.visibility = 'hidden';
+            document.getElementById('div-wo').style.visibility = 'hidden';
+            document.getElementById('div-art').style.visibility = 'hidden';
+        },
         elements: elements,
         }),
         document.getElementById('div-location')
@@ -321,12 +334,21 @@ function makeToolbar() {
             className: 'toolbar-button toolbar-button-size',
             img: '/img/new-work-order.svg',
             imgClassName: 'toolbar-button-size',
-            handleOnClick: function(){document.getElementById('div-location').style.visibility = 'visible';},
+            handleOnClick: function() {
+                document.getElementById('div-wo').style.visibility = 'hidden';
+                document.getElementById('div-art').style.visibility = 'hidden';
+                document.getElementById('div-location').style.visibility = 'visible';
+            },
         }, {
             id: 'button-toolbar-02',
             className: 'toolbar-button toolbar-button-size',
             img: '/img/search-work-orders.svg',
             imgClassName: 'toolbar-button-size',
+            handleOnClick: function() {
+                document.getElementById('div-location').style.visibility = 'hidden';
+                document.getElementById('div-art').style.visibility = 'hidden';
+                document.getElementById('div-wo').style.visibility = 'visible';
+            },
         },
     ];
 

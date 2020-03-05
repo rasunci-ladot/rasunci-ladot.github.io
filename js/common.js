@@ -9,7 +9,8 @@ const WARN   = 31;  // Warning conditions
 const NOTICE = 63;  // Normal, but significant, condition
 const INFO   = 127; // Informational message
 const DEBUG  = 255; // Debug-level message
-const LOGLEVEL = INFO;
+//const LOGLEVEL = INFO;
+const LOGLEVEL = DEBUG;
 
 function logDebug(msg) {
     if (LOGLEVEL & 128) {console.log(msg);}
@@ -52,16 +53,23 @@ class ToolbarButton extends React.Component {
 
     render() {
         logDebug('ToolbarButton.render');
+        let button = this.props.text;
+        if (typeof(this.props.img) !== 'undefined') {
+            logDebug('ToolbarButton.render typeof(this.props.img)='+typeof(this.props.img));
+            button = e('img', {
+                className: this.props.imgClassName,
+                src: this.props.img,
+            });
+        }
+        logDebug('ToolbarButton.render button='+button);
+
         return(e('button', {
             type: 'button',
             id: this.props.id,
             className: this.props.className,
             onClick: this.handleOnClick,
             },
-            e('img', {
-                className: this.props.imgClassName,
-                src: this.props.img,
-            }),
+            button,
         ));
     }
 }
@@ -81,6 +89,7 @@ class ToolbarFragment extends React.Component {
                 id: buttonDetails[i].id,
                 className: buttonDetails[i].className,
                 handleOnClick: buttonDetails[i].handleOnClick,
+                text: buttonDetails[i].text,
                 img: buttonDetails[i].img,
                 imgClassName: buttonDetails[i].imgClassName,
             }));
